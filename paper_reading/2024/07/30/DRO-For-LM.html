@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Distributionally Robust Optimization For Language Modeling | Zihao Tang’s Homepage</title>
+<meta name="generator" content="Jekyll v3.9.5">
+<meta property="og:title" content="Distributionally Robust Optimization For Language Modeling">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="Backgrounds">
+<meta property="og:description" content="Backgrounds">
+<link rel="canonical" href="https://ishikura-a.github.io/paper_reading/2024/07/30/DRO-For-LM.html">
+<meta property="og:url" content="https://ishikura-a.github.io/paper_reading/2024/07/30/DRO-For-LM.html">
+<meta property="og:site_name" content="Zihao Tang’s Homepage">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-07-30T04:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="Distributionally Robust Optimization For Language Modeling">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-30T04:00:00+00:00","datePublished":"2024-07-30T04:00:00+00:00","description":"Backgrounds","headline":"Distributionally Robust Optimization For Language Modeling","mainEntityOfPage":{"@type":"WebPage","@id":"https://ishikura-a.github.io/paper_reading/2024/07/30/DRO-For-LM.html"},"url":"https://ishikura-a.github.io/paper_reading/2024/07/30/DRO-For-LM.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+<link type="application/atom+xml" rel="alternate" href="https://ishikura-a.github.io/feed.xml" title="Zihao Tang's Homepage">
+<script>MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"svg":{"fontCache":"global"}}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header class="site-header" role="banner">
+
+  <div class="wrapper">
+<a class="site-title" rel="author" href="/">Zihao Tang's Homepage</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger">
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewbox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav>
+</div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Distributionally Robust Optimization For Language Modeling</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2024-07-30T04:00:00+00:00" itemprop="datePublished">Jul 30, 2024
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="backgrounds">Backgrounds</h2>
+
+<p>Datasets for training language models (LMs) are typically sampled from a mixture of many domains.
+For example, the Pile, a large publicly available dataset, is composed of 24% web data, 9% Wikipedia, 4% GitHub, etc.
+Llama 3.1 is trained with roughly 50% of tokens corresponding to general knowledge, 25% of mathematical and reasoning tokens, 17% code tokens, and 8% multilingual tokens.
+The mixture proportions of pretraining data domains greatly affect language model (LM) performance.
+However, it is unclear how much of each domain to include to produce a model that performs well for a wide variety of downstream tasks.
+To ensure model performance on as many downstream tasks as possible, it is natural to use DRO methods (Distributionally Robust Optimization) to optimize our LMs.</p>
+
+<h2 id="distributionally-robust-optimization">Distributionally Robust Optimization</h2>
+
+<p>The standard training procedure for neural networks is called empirical risk minimization (ERM):</p>
+
+<p>$$
+\hat{\theta}_{ERM}=\underset{\theta}{\operatorname{argmin}} \mathbb{E}_{(x, y) \sim \hat{P}} \left[l(f(x;\theta),y)\right],
+$$</p>
+
+<p>where $\hat{P}$ is the empirical distribution of the training data $x$ and $y$, $l$ is the loss function, and $f$ is the neural network parameterized with $\theta$.</p>
+
+<p>In distributionally robust optimization (DRO), we aim
+instead to minimize the worst-case expected loss over an uncertainty set of distributions $\mathcal{Q}$:</p>
+
+<p>$$
+\min_{\theta}\{\mathcal{R}(\theta):=\sup_{Q\in\mathcal{Q}}\mathbb{E}_{(x, y) \sim Q} \left[l(f(x;\theta),y)\right]\}
+$$</p>
+
+<p>The uncertainty set $\mathcal{Q}$ encodes the possible test distributions that we want our model to perform well on.
+Conventionally, the construction of the uncertainty set $\mathcal{Q}$ is based on some distance metrics in the following form:</p>
+
+<p>$$
+\mathcal{Q}:=\{Q|Q:d(Q,\hat{P})&lt;=\gamma\},
+$$
+where $d$ is a distance metric, $\hat{P}$ is the empirical distribution of the training data $x$ and $y$ and $\gamma$ is a hyperparameter.
+The distance metric $d$ can be chosen from a variety of distance metrics, such as the Wasserstein distance and the f-divergence.
+Generally, if the downstream task apears in the uncertainty set, the model will have satisfactory results. However, based on the distance metric, the construction of the uncertainty set could be over-pessimistic, i.e., it could include some noise distributions which would never appear in the downstream tasks.
+The over-pessimisim problem would undermine the performance of the model on downstream tasks.</p>
+
+<h2 id="group-dro">Group DRO</h2>
+
+<p>To construct a realistic set of possible test distributions without being overly conservative, we can leverage prior knowledge of spurious correlations to define groups over the training data and then define the uncertainty set $\mathcal{Q}$ in terms of these groups.
+Assume the training distribution $\hat{P}$ is assumed to be a mixture of $m$ groups $P_g$ indexed by $\mathcal{G}=\{1,2,\cdots,m\}$.
+We can then define the uncertainty set $\mathcal{Q}$ as any mixture of these groups:
+$$
+\mathcal{Q}:=\{\sum_{g=1}^{m}q_gP_g,q\in\Delta_{m-1}\},
+$$
+where $\Delta_{m-1}$ is the $m$-dimensional simplex.
+Then the DRO objective can be converted to:
+$$
+\hat{\theta}_{\text{DRO}} := \arg\min_{\theta \in \Theta} \{ \hat{\mathcal{R}}(\theta) := \max_{g \in \mathcal{G}} \mathbb{E}_{(x,y) \sim \hat{P}_g} [\ell(\theta; (x,y))] \}.
+$$</p>
+
+<h2 id="dro-for-language-modeling">DRO for Language Modeling</h2>
+
+<p>The vanilla methodology still has some limitations, especially in the field of language modeling, where we try to minimize the log loss of a next token prediction.</p>
+
+<p>Consider a multi-task setting, where we have a hard task and a easy task.
+During training, the hard task already has a rather good performance, and the easy task is still far from optimal. However, in terms of absolute performance, the easy task is still better than the hard task.
+In such case, previous paradigms would still mainly focusing on optimizing the hard task, though it is already well-optimized.
+Here comes the key point:</p>
+
+<blockquote>
+  <p><strong>Given that each task has its own difficulty, it would be unfair to optimize these tasks towards the same objective - minimize the loss to 0.</strong></p>
+</blockquote>
+
+<p>As a result, DRO for LM adds a baseline loss for compensation.
+Suppose for a given task $z$, we are fully aware of its performance upper-bound $p_{x|z}(x|z)$, we can optimize the task by a baselined loss:
+$$
+l(x,z;\theta)=\log{p_{x|z}(x|z)}-\log{p_\theta(x)}=\rm{KL}(p_{x|z}(x|z)\parallel{p_\theta(x)}).
+$$
+Generally, $\log{p_{x|z}(x|z)}$ is hard to estimate, in practice, we can train a baseline model (like bigram model) for each task.</p>
+
+<h2 id="doremi">Doremi</h2>
+
+<p>To better use DRO LM training larger language models (like &amp;B or larger), Doremi trains small models with DRO LM to get the domain weights and then uses the weights to train the final model.
+The overall framework is shown below:
+<img src="/assets/240807000.png" alt="Doremi Framework"></p>
+
+  </div>
+<a class="u-url" href="/paper_reading/2024/07/30/DRO-For-LM.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Zihao Tang's Homepage</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Zihao Tang's Homepage</li>
+<li><a class="u-email" href="mailto:tangzihao@zju.edu.cn">tangzihao@zju.edu.cn</a></li>
+</ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+<ul class="social-media-list"><li><a href="https://github.com/Ishikura-a"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">Ishikura-a</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>There should be something, but I just haven't figured it out :).</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
