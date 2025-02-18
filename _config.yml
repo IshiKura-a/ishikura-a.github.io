@@ -16,7 +16,7 @@ timezone: Asia/Shanghai
 
 title: Zihao Tang # the main title
 
-tagline: Microsoft, STCA # it will display as the subtitle
+tagline: Zhejiang University # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
   A minimal, responsive and feature-rich Jekyll theme for technical writing.
