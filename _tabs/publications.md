@@ -17,3 +17,7 @@ mermaid: true
 - **`[ICLR'24]`** **AuG-KD: Anchor-Based Mixup Generation for Out-of-Domain Knowledge Distillation**  
   - **Zihao Tang**, Zheqi Lv, Shengyu Zhang\*, Yifan Zhou, Xinyu Duan, Fei Wu, Kun Kuang\*.  
   - [**Paper**](https://arxiv.org/abs/2403.07030) \| [**Code**](https://github.com/IshiKura-a/AuG-KD)
+
+- **`[ICML'25]`** **Latent Score-Based Reweighting for Robust Classification on Imbalanced Tabular Data**  
+  - Yunze Tong, Fengda Zhang, **Zihao Tang**, Kaifeng Gao, Kai Huang, Pengfei Lyu, Jun Xiao, Kun Kuang.  
+  - [**Paper**](https://openreview.net/forum?id=nnO4TpeUnH)
