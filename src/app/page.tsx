@@ -122,7 +122,7 @@ export default function Home() {
 
       <footer className="footer">
         <span>© {profile.name}</span>
-        <span>ishikura-a.github.io</span>
+        <span>zihaotang.com</span>
       </footer>
     </main>
   );

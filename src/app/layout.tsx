@@ -18,11 +18,11 @@ const newsreader = Newsreader({
 export const metadata: Metadata = {
   title: "Zihao Tang",
   description: "Zihao Tang researches LLM Agents, AI Memory, and Agentic RL.",
-  metadataBase: new URL("https://ishikura-a.github.io"),
+  metadataBase: new URL("https://zihaotang.com"),
   openGraph: {
     title: "Zihao Tang",
     description: "LLM Agents · AI Memory · Agentic RL",
-    url: "https://ishikura-a.github.io",
+    url: "https://zihaotang.com",
     siteName: "Zihao Tang",
     images: ["/avatar.jpg"],
   },
